@@ -4,6 +4,19 @@ import math
 
 class InputEmbeddings(nn.Module):
 
+    """
+    This converts words (represented as numbers) into deterministic vectors.
+
+    Args:
+        vocab_size: how many different words your model knows
+        d_model: how many dimensions each word vector will have
+
+    The vectors are multiplied by sqrt(d_model) to help with training stability.
+
+    Example:
+        If you have vocab_size=1000 and d_model=512, each word from your 
+        1000-word vocabulary gets converted into a 512-dimensional vector
+    """
     def __init__(self, d_model: int, vocab_size: int):
         super().__init__()
         self.d_model = d_model
@@ -15,6 +28,29 @@ class InputEmbeddings(nn.Module):
 
 class PositionalEncoding(nn.Module):
     
+    """
+    Adds positional information to word vectors in transformer models.
+    
+    Since transformers process all words simultaneously, they need position info
+    to know word order. This is done by:
+    1. Creating unique sine/cosine patterns for each position
+    2. Adding these patterns to the word vectors
+    
+    Intuition:
+        Imagine the positional encoding as giving each position in the sequence a "signature" or "address" in a high-dimensional space, 
+        where these signatures reflect both the absolute position and relative differences between positions. The sinusoids act as a unique 
+        but systematic way to assign these signatures, enabling the model to "understand" sequence order without explicit recurrence or convolution mechanisms.
+
+    Args:
+        d_model: Dimension of the model
+        seq_len: Maximum sequence length the model can handle
+        dropout: Dropout rate to prevent overfitting
+        
+    Flow:
+    1. Text -> Numbers (vocabulary lookup)
+    2. Numbers -> Vectors (InputEmbeddings)
+    3. Vectors + Position Info (PositionalEncoding)
+    """
     def __init__(self, d_model: int, seq_len: int, dropout: float) -> None:
         super().__init__()
         self.d_model = d_model
